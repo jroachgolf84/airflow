@@ -81,6 +81,13 @@ class _CreateDatabricksWorkflowOperator(BaseOperator):
 
     :param task_id: The task_id of the operator
     :param databricks_conn_id: The connection ID to use when connecting to Databricks.
+    :param access_control_list: List of permissions to set on the job. Array of object
+        (AccessControlRequestForUser) or object (AccessControlRequestForGroup) or object
+        (AccessControlRequestForServicePrincipal).
+
+        .. seealso::
+            This will only be used on create. In order to reset ACL consider using the Databricks
+            UI.
     :param existing_clusters: A list of existing clusters to use for the workflow.
     :param extra_job_params: A dictionary of extra properties which will override the default Databricks
         Workflow Job definitions.
@@ -100,6 +107,7 @@ class _CreateDatabricksWorkflowOperator(BaseOperator):
 
     template_fields = (
         "databricks_conn_id",
+        "access_control_list",
         "existing_clusters",
         "extra_job_params",
         "jar_params",
@@ -125,6 +133,7 @@ class _CreateDatabricksWorkflowOperator(BaseOperator):
         self,
         task_id: str,
         databricks_conn_id: str,
+        access_control_list: list[dict] | None = None,
         existing_clusters: list[str] | None = None,
         extra_job_params: dict[str, Any] | None = None,
         jar_params: list[str] | None = None,
@@ -137,6 +146,7 @@ class _CreateDatabricksWorkflowOperator(BaseOperator):
         **kwargs,
     ):
         self.databricks_conn_id = databricks_conn_id
+        self.access_control_list = access_control_list or []
         self.existing_clusters = existing_clusters or []
         self.extra_job_params = extra_job_params or {}
         self.jar_params = jar_params or []
@@ -187,6 +197,7 @@ class _CreateDatabricksWorkflowOperator(BaseOperator):
             "format": "MULTI_TASK",
             "job_clusters": self.job_clusters,
             "max_concurrent_runs": self.max_concurrent_runs,
+            "access_control_list": self.access_control_list,
         }
         return merge(default_json, self.extra_job_params)
 
@@ -299,6 +310,13 @@ class DatabricksWorkflowTaskGroup(TaskGroup):
 
     :param databricks_conn_id: The name of the databricks connection to use.
     :param existing_clusters: A list of existing clusters to use for this workflow.
+    :param access_control_list: List of permissions to set on the job. Array of object
+        (AccessControlRequestForUser) or object (AccessControlRequestForGroup) or object
+        (AccessControlRequestForServicePrincipal).
+
+        .. seealso::
+            This will only be used on create. In order to reset ACL consider using the Databricks
+            UI.
     :param extra_job_params: A dictionary containing properties which will override the default
         Databricks Workflow Job definitions.
     :param jar_params: A list of jar parameters to pass to the workflow. These parameters will be passed to all jar
@@ -321,6 +339,7 @@ class DatabricksWorkflowTaskGroup(TaskGroup):
     def __init__(
         self,
         databricks_conn_id: str,
+        access_control_list: list[dict] | None = None,
         existing_clusters: list[str] | None = None,
         extra_job_params: dict[str, Any] | None = None,
         jar_params: list[str] | None = None,
@@ -333,6 +352,7 @@ class DatabricksWorkflowTaskGroup(TaskGroup):
         **kwargs,
     ):
         self.databricks_conn_id = databricks_conn_id
+        self.access_control_list = access_control_list or []
         self.existing_clusters = existing_clusters or []
         self.extra_job_params = extra_job_params or {}
         self.jar_params = jar_params or []
@@ -356,6 +376,7 @@ class DatabricksWorkflowTaskGroup(TaskGroup):
             task_group=self,
             task_id="launch",
             databricks_conn_id=self.databricks_conn_id,
+            access_control_list=self.access_control_list,
             existing_clusters=self.existing_clusters,
             extra_job_params=self.extra_job_params,
             jar_params=self.jar_params,
