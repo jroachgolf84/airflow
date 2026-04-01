@@ -39,7 +39,6 @@ from airflow.utils import timezone
 
 DEFAULT_DATE = timezone.datetime(2021, 1, 1)
 
-# TODO: Remove this
 ACCESS_CONTROL_LIST = [
     {
         "user_name": "jsmith@example.com",
