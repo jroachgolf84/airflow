@@ -104,7 +104,8 @@ def test_create_workflow_json(mock_databricks_hook, context, mock_task_group):
     assert workflow_json["job_clusters"] == []
     assert workflow_json["max_concurrent_runs"] == 1
     assert workflow_json["timeout_seconds"] == 0
-    assert workflow_json["access_control_list"] == []
+
+    assert "access_control_list" not in workflow_json
 
 
 def test_create_workflow_json_access_control_list(mock_databricks_hook, context, mock_task_group):

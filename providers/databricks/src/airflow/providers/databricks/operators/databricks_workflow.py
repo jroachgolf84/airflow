@@ -86,8 +86,10 @@ class _CreateDatabricksWorkflowOperator(BaseOperator):
         (AccessControlRequestForServicePrincipal).
 
         .. seealso::
-            This will only be used on create. In order to reset ACL consider using the Databricks
-            UI.
+            The access control list is applied both when creating a new job and when resetting
+            an existing job. When provided for an existing job, the supplied ACL replaces the
+            job's current permissions. You can also manage job permissions directly in the
+            Databricks UI.
     :param existing_clusters: A list of existing clusters to use for the workflow.
     :param extra_job_params: A dictionary of extra properties which will override the default Databricks
         Workflow Job definitions.
@@ -197,8 +199,11 @@ class _CreateDatabricksWorkflowOperator(BaseOperator):
             "format": "MULTI_TASK",
             "job_clusters": self.job_clusters,
             "max_concurrent_runs": self.max_concurrent_runs,
-            "access_control_list": self.access_control_list,
         }
+
+        if self.access_control_list:
+            default_json["access_control_list"] = self.access_control_list
+
         return merge(default_json, self.extra_job_params)
 
     def _create_or_reset_job(self, context: Context) -> int:
