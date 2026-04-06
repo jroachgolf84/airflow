@@ -320,8 +320,8 @@ class DatabricksWorkflowTaskGroup(TaskGroup):
         (AccessControlRequestForServicePrincipal).
 
         .. seealso::
-            This will only be used on create. In order to reset ACL consider using the Databricks
-            UI.
+            When provided, this is applied when the job is created and when an existing job is
+            reset. Setting this replaces any existing job permissions.
     :param extra_job_params: A dictionary containing properties which will override the default
         Databricks Workflow Job definitions.
     :param jar_params: A list of jar parameters to pass to the workflow. These parameters will be passed to all jar
