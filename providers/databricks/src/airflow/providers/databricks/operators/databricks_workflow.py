@@ -148,7 +148,7 @@ class _CreateDatabricksWorkflowOperator(BaseOperator):
         **kwargs,
     ):
         self.databricks_conn_id = databricks_conn_id
-        self.access_control_list = access_control_list or []
+        self.access_control_list = access_control_list
         self.existing_clusters = existing_clusters or []
         self.extra_job_params = extra_job_params or {}
         self.jar_params = jar_params or []
@@ -201,7 +201,7 @@ class _CreateDatabricksWorkflowOperator(BaseOperator):
             "max_concurrent_runs": self.max_concurrent_runs,
         }
 
-        if self.access_control_list:
+        if self.access_control_list is not None:
             default_json["access_control_list"] = self.access_control_list
 
         return merge(default_json, self.extra_job_params)
@@ -357,7 +357,7 @@ class DatabricksWorkflowTaskGroup(TaskGroup):
         **kwargs,
     ):
         self.databricks_conn_id = databricks_conn_id
-        self.access_control_list = access_control_list or []
+        self.access_control_list = access_control_list
         self.existing_clusters = existing_clusters or []
         self.extra_job_params = extra_job_params or {}
         self.jar_params = jar_params or []

@@ -108,12 +108,15 @@ def test_create_workflow_json(mock_databricks_hook, context, mock_task_group):
     assert "access_control_list" not in workflow_json
 
 
-def test_create_workflow_json_access_control_list(mock_databricks_hook, context, mock_task_group):
+@pytest.mark.parametrize("access_control_list", [ACCESS_CONTROL_LIST, []])
+def test_create_workflow_json_access_control_list(
+    mock_databricks_hook, context, mock_task_group, access_control_list
+):
     """Test that _CreateDatabricksWorkflowOperator.create_workflow_json includes access_control_list."""
     operator = _CreateDatabricksWorkflowOperator(
         task_id="test_task",
         databricks_conn_id="databricks_default",
-        access_control_list=ACCESS_CONTROL_LIST,
+        access_control_list=access_control_list,
     )
     operator.task_group = mock_task_group
 
@@ -124,7 +127,7 @@ def test_create_workflow_json_access_control_list(mock_databricks_hook, context,
     workflow_json = operator.create_workflow_json(context=context)
 
     # Only validate the access_control_list parameter; everything else has been tested above
-    assert workflow_json["access_control_list"] == ACCESS_CONTROL_LIST
+    assert workflow_json["access_control_list"] == access_control_list
 
 
 def test_create_or_reset_job_existing(mock_databricks_hook, context, mock_task_group):
@@ -242,7 +245,7 @@ def test_task_group_exit_creates_operator(mock_databricks_workflow_operator):
         task_group=task_group,
         task_id="launch",
         databricks_conn_id="databricks_conn",
-        access_control_list=[],
+        access_control_list=None,
         existing_clusters=[],
         extra_job_params={},
         jar_params=[],
