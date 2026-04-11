@@ -18,10 +18,13 @@
  */
 import { Flex, type FlexProps } from "@chakra-ui/react";
 import Editor, { type OnMount } from "@monaco-editor/react";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 
 import { ClipboardRoot, ClipboardIconButton } from "src/components/ui";
 import { useColorMode } from "src/context/colorMode";
+
+const MAX_HEIGHT = 300;
+const MIN_HEIGHT = 40;
 
 type Props = {
   readonly collapsed?: boolean;
@@ -33,22 +36,46 @@ const RenderedJsonField = ({ collapsed = false, content, enableClipboard = true,
   const contentFormatted = JSON.stringify(content, undefined, 2);
   const { colorMode } = useColorMode();
   const lineCount = contentFormatted.split("\n").length;
-  const height = `${Math.min(Math.max(lineCount * 19 + 10, 40), 300)}px`;
+  const expandedHeight = Math.min(Math.max(lineCount * 19 + 10, MIN_HEIGHT), MAX_HEIGHT);
+  const [editorHeight, setEditorHeight] = useState(collapsed ? MIN_HEIGHT : expandedHeight);
+  const [isReady, setIsReady] = useState(!collapsed);
   const theme = colorMode === "dark" ? "vs-dark" : "vs-light";
 
   const handleMount: OnMount = useCallback(
     (editorInstance) => {
+      editorInstance.onDidContentSizeChange(() => {
+        const contentHeight = editorInstance.getContentHeight();
+
+        setEditorHeight(Math.min(Math.max(contentHeight, MIN_HEIGHT), MAX_HEIGHT));
+      });
+
       if (collapsed) {
-        void editorInstance.getAction("editor.foldAll")?.run();
+        const action = editorInstance.getAction("editor.foldAll");
+
+        if (action) {
+          void action.run().then(() => {
+            setIsReady(true);
+          });
+        } else {
+          setIsReady(true);
+        }
       }
     },
     [collapsed],
   );
 
   return (
-    <Flex {...rest}>
+    <Flex
+      flex={1}
+      gap={2}
+      minW={200}
+      // Hide the editor until it's ready to prevent a flickering effect when collapsing.
+      // The editor will be hidden until the fold action is completed (if collapsed) or immediately if not collapsed.
+      style={isReady ? undefined : { height: "0px", overflow: "hidden" }}
+      {...rest}
+    >
       <Editor
-        height={height}
+        height={`${editorHeight}px`}
         language="json"
         onMount={handleMount}
         options={{
