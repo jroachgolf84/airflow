@@ -677,10 +677,14 @@ class TriggerRunnerSupervisor(WatchedSubprocess):
         session: Session,
     ) -> workloads.RunTrigger | None:
         if trigger.task_instance is None:
+            # aip-93: Retrieve any Assets associated with the AssetWatcher
+            asset = trigger.assets[0] if trigger.assets else None
             return workloads.RunTrigger(
                 id=trigger.id,
                 classpath=trigger.classpath,
                 encrypted_kwargs=trigger.encrypted_kwargs,
+                asset_name=asset.name if asset else None,
+                asset_uri=asset.uri if asset else None,
             )
 
         if not trigger.task_instance.dag_version_id:
@@ -1119,6 +1123,11 @@ class TriggerRunner:
             trigger_instance.trigger_id = trigger_id
             trigger_instance.triggerer_job_id = self.job_id
             trigger_instance.timeout_after = workload.timeout_after
+
+            # aip-93: Inject asset identity for watcher triggers
+            if workload.asset_name is not None:
+                trigger_instance.asset_name = workload.asset_name
+                trigger_instance.asset_uri = workload.asset_uri
 
             self.triggers[trigger_id] = {
                 "task": asyncio.create_task(

@@ -212,6 +212,13 @@ class BaseEventTrigger(BaseTrigger):
 
     supports_triggerer_queue: bool = False
 
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+        # aip-93: Making these accessible for Triggers inheriting from it
+        self.asset_name: str | None = None
+        self.asset_uri: str | None = None
+
     @staticmethod
     def hash(classpath: str, kwargs: dict[str, Any]) -> int:
         """

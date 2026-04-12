@@ -103,6 +103,8 @@ def _decode_asset(var: dict[str, Any]):
                     "classpath": watcher["trigger"]["classpath"],
                     "kwargs": smart_decode_trigger_kwargs(watcher["trigger"]["kwargs"]),
                 },
+                asset_name=watcher.get("asset_name"),
+                asset_uri=watcher.get("asset_uri"),
             )
             for watcher in watchers
         ],

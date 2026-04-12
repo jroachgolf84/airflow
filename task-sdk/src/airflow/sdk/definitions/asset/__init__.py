@@ -254,6 +254,11 @@ class AssetWatcher:
 
     name: str
     trigger: BaseEventTrigger = attrs.field(validator=_validate_asset_watcher_trigger)
+    asset: Asset | None = attrs.field(default=None, eq=False, repr=False)
+
+    def __attrs_post_init__(self):
+        if self.asset is not None and self not in self.asset.watchers:
+            self.asset.watchers.append(self)
 
 
 @attrs.define(init=False, unsafe_hash=False)

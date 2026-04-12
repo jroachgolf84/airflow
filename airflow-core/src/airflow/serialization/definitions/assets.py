@@ -109,6 +109,8 @@ class SerializedAssetWatcher:
 
     name: str
     trigger: dict
+    asset_name: str | None = None
+    asset_uri: str | None = None
 
 
 @attrs.define
