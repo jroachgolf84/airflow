@@ -679,6 +679,7 @@ class TriggerRunnerSupervisor(WatchedSubprocess):
         if trigger.task_instance is None:
             # aip-93: Retrieve any Assets associated with the AssetWatcher
             asset = trigger.assets[0] if trigger.assets else None
+
             return workloads.RunTrigger(
                 id=trigger.id,
                 classpath=trigger.classpath,

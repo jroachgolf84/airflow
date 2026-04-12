@@ -219,6 +219,8 @@ class BaseEventTrigger(BaseTrigger):
         self.asset_name: str | None = None
         self.asset_uri: str | None = None
 
+        # TODO: aip-103, create self.asset_state using asset_name/uri (if provided)
+
     @staticmethod
     def hash(classpath: str, kwargs: dict[str, Any]) -> int:
         """

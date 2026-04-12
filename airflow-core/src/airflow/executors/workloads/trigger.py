@@ -47,6 +47,6 @@ class RunTrigger(BaseModel):
         None  # Serialized DagRun data in dict format so it can be deserialized in trigger subprocess.
     )
 
-    # aip-93
+    # aip-93: Add asset_name and asset_uri to pass through to BaseEventTrigger
     asset_name: str | None = None
     asset_uri: str | None = None
