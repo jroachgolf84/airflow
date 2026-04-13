@@ -714,7 +714,7 @@ class SQLTableCheckOperator(BaseSQLOperator):
 
     :param conn_id: the connection ID used to connect to the database
     :param database: name of database which overwrite the defined one in connection
-    :param accept_none: If True, do not fail if the table is empty
+    :param accept_none: If True, an empty table (row count=0) will not trigger a failure. 
 
     .. seealso::
         For more information on how to use this operator, take a look at the guide:
