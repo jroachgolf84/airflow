@@ -606,8 +606,8 @@ class DagRunOperations(BaseOperations):
 
     def list(
         self,
-        state: str,
-        limit: int,
+        state: str | None = None,
+        limit: int = 100,
         start_date: datetime.datetime | None = None,
         end_date: datetime.datetime | None = None,
         dag_id: str | None = None,
@@ -616,7 +616,7 @@ class DagRunOperations(BaseOperations):
         List dag runs (at most `limit` results).
 
         Args:
-            state: Filter dag runs by state
+            state: Filter dag runs by state (optional; no filter applied when omitted)
             start_date: Filter dag runs by start date (optional)
             end_date: Filter dag runs by end date (optional)
             limit: Limit the number of results returned
@@ -626,10 +626,9 @@ class DagRunOperations(BaseOperations):
         if not dag_id:
             dag_id = "~"
 
-        params: dict[str, Any] = {
-            "state": str(state),
-            "limit": limit,
-        }
+        params: dict[str, Any] = {"limit": limit}
+        if state is not None:
+            params["state"] = str(state)
         if start_date is not None:
             params["start_date"] = start_date.isoformat()
         if end_date is not None:
@@ -646,10 +645,20 @@ class JobsOperations(BaseOperations):
     """Job operations."""
 
     def list(
-        self, job_type: str, hostname: str, is_alive: bool
+        self,
+        job_type: str | None = None,
+        hostname: str | None = None,
+        is_alive: bool | None = None,
     ) -> JobCollectionResponse | ServerResponseError:
         """List all jobs."""
-        params = {"job_type": job_type, "hostname": hostname, "is_alive": is_alive}
+        params: dict[str, Any] = {}
+        if job_type:
+            params["job_type"] = job_type
+        if hostname:
+            params["hostname"] = hostname
+        if is_alive is not None:
+            params["is_alive"] = is_alive
+
         return super().execute_list(path="jobs", data_model=JobCollectionResponse, params=params)
 
 
