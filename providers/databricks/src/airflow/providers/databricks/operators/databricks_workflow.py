@@ -87,9 +87,9 @@ class _CreateDatabricksWorkflowOperator(BaseOperator):
 
         .. seealso::
             The access control list is applied both when creating a new job and when resetting
-            an existing job. When provided for an existing job, the supplied ACL replaces the
-            job's current permissions. You can also manage job permissions directly in the
-            Databricks UI.
+            an existing job. If access_control_list != [], the supplied ACL replaces the
+            job's current permissions. Otherwise, the prior ACL stays in place. You can also manage
+            job permissions directly in the Databricks UI.
     :param existing_clusters: A list of existing clusters to use for the workflow.
     :param extra_job_params: A dictionary of extra properties which will override the default Databricks
         Workflow Job definitions.
@@ -321,7 +321,8 @@ class DatabricksWorkflowTaskGroup(TaskGroup):
 
         .. seealso::
             When provided, this is applied when the job is created and when an existing job is
-            reset. Setting this replaces any existing job permissions.
+            reset. Setting this replaces any existing job permissions, unless its value is
+            an empty list. If access_control_list == [], the prior ACL remains in place.
     :param extra_job_params: A dictionary containing properties which will override the default
         Databricks Workflow Job definitions.
     :param jar_params: A list of jar parameters to pass to the workflow. These parameters will be passed to all jar

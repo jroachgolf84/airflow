@@ -130,6 +130,25 @@ def test_create_workflow_json_access_control_list(
     assert workflow_json["access_control_list"] == access_control_list
 
 
+def test_create_or_reset_job_empty_access_control_list(mock_databricks_hook, context, mock_task_group):
+    """Test that access_control_list=[] reaches reset_job unchanged."""
+    operator = _CreateDatabricksWorkflowOperator(
+        task_id="test_task",
+        databricks_conn_id="databricks_default",
+        access_control_list=[],
+    )
+    operator.task_group = mock_task_group
+    operator._hook.list_jobs.return_value = [{"job_id": 123}]
+
+    operator._create_or_reset_job(context)
+
+    operator._hook.reset_job.assert_called_once()
+    _, job_spec = operator._hook.reset_job.call_args.args
+
+    assert "access_control_list" in job_spec
+    assert job_spec["access_control_list"] == []
+
+
 def test_create_or_reset_job_existing(mock_databricks_hook, context, mock_task_group):
     """Test that _CreateDatabricksWorkflowOperator._create_or_reset_job resets the job if it already exists."""
     operator = _CreateDatabricksWorkflowOperator(task_id="test_task", databricks_conn_id="databricks_default")
