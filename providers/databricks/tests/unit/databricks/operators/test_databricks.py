@@ -2729,9 +2729,7 @@ class TestDatabricksTaskOperator:
 # Create a custom Operator that inherits from DatabricksTaskBaseOperator to test
 # the rendering of the template_fields
 class CustomDatabricksOperator(DatabricksTaskBaseOperator):
-    template_fields = (
-        "custom_field_1",
-    )
+    template_fields = ("custom_field_1",)
 
     def __init__(self, custom_field_1, **kwargs):
         self.custom_field_1 = custom_field_1

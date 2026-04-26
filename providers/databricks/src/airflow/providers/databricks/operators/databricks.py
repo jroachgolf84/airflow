@@ -1329,9 +1329,9 @@ class DatabricksTaskBaseOperator(BaseOperator, ABC):
         # For any Operators that are inheriting from this DatabricksTaskBaseOperator,
         # this will allow for them to render any fields specified in template_fields
         # when the job is launched
-        templated_run_json: dict = self.render_template(content=run_json, context=context) \
-            if context is not None \
-            else run_json
+        templated_run_json: dict = (
+            self.render_template(content=run_json, context=context) if context is not None else run_json
+        )
 
         self.databricks_run_id = self._hook.submit_run(templated_run_json)
         url = self._hook.get_run_page_url(self.databricks_run_id)
