@@ -1666,7 +1666,7 @@ class DatabricksTaskOperator(DatabricksTaskBaseOperator):
     """
 
     CALLER = "DatabricksTaskOperator"
-    template_fields = ("workflow_run_metadata",)
+    template_fields = ("task_config", "workflow_run_metadata",)
 
     def __init__(
         self,
