@@ -801,6 +801,7 @@ class TestGKEStartPodOperator:
             on_finish_action=OnFinishAction.KEEP_POD,
             gcp_conn_id=TEST_CONN_ID,
             impersonation_chain=TEST_IMPERSONATION_CHAIN,
+            schedule_timeout_seconds=60,
         )
 
     def test_template_fields(self):
@@ -891,6 +892,7 @@ class TestGKEStartPodOperator:
             ssl_ca_cert=GKE_SSL_CA_CERT,
             get_logs=mock_get_logs,
             startup_timeout=120,
+            schedule_timeout=60,  # issue-66352: schedule_timeout should now be passed into the trigger
             cluster_context=None,
             poll_interval=2,
             in_cluster=None,
