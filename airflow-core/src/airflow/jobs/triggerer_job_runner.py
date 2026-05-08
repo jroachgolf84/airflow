@@ -760,7 +760,7 @@ class TriggerRunnerSupervisor(WatchedSubprocess):
         render_log_fname: Callable[..., str],
         session: Session,
     ) -> workloads.RunTrigger | None:
-        # aip-93: Why are we doing this?
+        # aip-93
         if trigger.task_instance is None:
             asset_name: str | None = None
             asset_uri: str | None = None
