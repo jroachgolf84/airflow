@@ -46,3 +46,7 @@ class RunTrigger(BaseModel):
     dag_run_data: dict | None = (
         None  # Serialized DagRun data in dict format so it can be deserialized in trigger subprocess.
     )
+
+    # aip-93
+    watched_asset_name: str | None = None  # Set for BaseEventTrigger asset watchers only.
+    watched_asset_uri: str | None = None  # Set for BaseEventTrigger asset watchers only.

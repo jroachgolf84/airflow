@@ -760,11 +760,23 @@ class TriggerRunnerSupervisor(WatchedSubprocess):
         render_log_fname: Callable[..., str],
         session: Session,
     ) -> workloads.RunTrigger | None:
+        # aip-93: Why are we doing this?
         if trigger.task_instance is None:
+            asset_name: str | None = None
+            asset_uri: str | None = None
+
+            # aip-93: Is it always going to be the first asset from the asset_watchers list?
+            if trigger.asset_watchers:
+                first_asset = trigger.asset_watchers[0].asset
+                asset_name = first_asset.name
+                asset_uri = first_asset.uri
+
             return workloads.RunTrigger(
                 id=trigger.id,
                 classpath=trigger.classpath,
                 encrypted_kwargs=trigger.encrypted_kwargs,
+                watched_asset_name=asset_name,
+                watched_asset_uri=asset_uri,
             )
 
         if not trigger.task_instance.dag_version_id:
@@ -1266,6 +1278,15 @@ class TriggerRunner:
             trigger_instance.trigger_id = trigger_id
             trigger_instance.triggerer_job_id = self.job_id
             trigger_instance.timeout_after = workload.timeout_after
+
+            # aip-93
+            if isinstance(trigger_instance, BaseEventTrigger) and workload.watched_asset_uri:
+                from airflow.sdk.definitions.asset import AssetUniqueKey
+
+                trigger_instance.watched_asset = AssetUniqueKey(
+                    name=workload.watched_asset_name,
+                    uri=workload.watched_asset_uri,
+                )
 
             self.triggers[trigger_id] = {
                 "task": asyncio.create_task(
