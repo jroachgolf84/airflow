@@ -148,7 +148,7 @@ def _get_count_by_matched_states(
         matched_states: list = [state in states for state in task_states.values()]
 
         # An empty inner, such as {"r": {}}, results in count NOT being incremented
-        if len(matched_states) > 0  and all(matched_states):
+        if len(matched_states) > 0 and all(matched_states):
             count += 1
 
     return count
