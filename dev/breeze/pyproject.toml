@@ -76,7 +76,8 @@ dependencies = [
     "twine>=4.0.2",
     "tqdm>=4.67.1",
     "boto3>=1.37.2",
-    "semver>=3.0.4"
+    "semver>=3.0.4",
+    "boto3-stubs~=1.43.56",
 ]
 
 [project.scripts]
